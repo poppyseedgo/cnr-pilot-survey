@@ -145,7 +145,7 @@ input, textarea {
 }
 
 .slide-hint {
-  font-size: 13px;
+  font-size: 16px;
   color: #666;
   margin-bottom: 20px;
 }
@@ -206,7 +206,7 @@ input, textarea {
 }
 
 .meta-value {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   color: #111;
 }
@@ -229,7 +229,7 @@ input, textarea {
 }
 
 .field-label {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: #111;
   line-height: 1.5;
@@ -305,7 +305,7 @@ input, textarea {
 }
 
 .task-desc {
-  font-size: 15px;
+  font-size: 16px;
   color: #333;
   margin-top: 12px;
   line-height: 1.6;
@@ -317,7 +317,7 @@ input, textarea {
 }
 
 .section-heading {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   color: #111;
   margin-bottom: 16px;
@@ -406,7 +406,7 @@ input, textarea {
 }
 
 .check-label {
-  font-size: 14px;
+  font-size: 16px;
   color: #111;
   line-height: 1.5;
   word-break: keep-all;
@@ -421,7 +421,7 @@ input, textarea {
   border-left: 2px solid #111;
 }
 .policy-note p {
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.7;
   color: #333;
   margin-bottom: 10px;
@@ -430,7 +430,7 @@ input, textarea {
 .policy-note p:last-child {
   margin-bottom: 0;
   color: #666;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 /* ---------- Feedback block ---------- */
@@ -466,7 +466,7 @@ input, textarea {
 }
 
 .thanks-desc {
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.8;
   color: #333;
   word-break: keep-all;
