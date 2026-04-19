@@ -1,10 +1,8 @@
 /* ==========================================================================
-   C&R Space Pilot Survey - Styles
-   기반 디자인: Figma 흑백 미니멀, Pretendard, 2px 프로그레스 바
-   접근성: 최소 탭 타겟 44px, 고대비
+   C&R Space Pilot Survey - Styles (Figma 100% 반영)
    ========================================================================== */
 
-/* ---------- Pretendard 로컬/웹폰트 ---------- */
+/* Pretendard 웹폰트 */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css');
 
 /* ---------- Reset ---------- */
@@ -12,7 +10,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: inherit;  /* Pretendard 강제 - body에서 상속 */
+  font-family: inherit;  /* Pretendard 상속 강제 */
 }
 
 html, body {
@@ -29,7 +27,6 @@ body {
 }
 
 button {
-  font-family: inherit;
   cursor: pointer;
   border: none;
   background: none;
@@ -37,150 +34,145 @@ button {
 }
 
 input, textarea {
-  font-family: inherit;
-  font-size: 16px; /* iOS 자동 확대 방지 */
+  font-size: 16px; /* iOS 확대 방지 */
+  color: #111;
 }
 
 /* ==========================================================================
-   Layout Shell - 헤더 고정 / 본문 스크롤 / 하단 버튼 고정 구조
-   ----------------------------------------------------------------------------
-   핵심 설계:
-   - .shell: 뷰포트 전체 높이 (100dvh) flex column
-   - .header: flex-shrink: 0 (고정 높이, 상단)
-   - .main: flex: 1 + overflow-y: auto (가운데 스크롤 영역)
-   - .nav: flex-shrink: 0 (고정 높이, 하단)
+   Shell Layout: Main(scroll) + Nav(fixed bottom)
    ========================================================================== */
 .shell {
   max-width: 640px;
   margin: 0 auto;
   height: 100vh;
-  height: 100dvh;       /* iOS Safari 키보드 대응 */
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: #fff;
   position: relative;
-  overflow: hidden;     /* shell 자체는 스크롤 안 함, main만 스크롤 */
+  overflow: hidden;
 }
 
-/* ---------- Top Header (Progress) - 상단 고정 ---------- */
-.header {
-  flex-shrink: 0;
+.main {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   background: #fff;
-  padding: 12px 20px 0;
-  z-index: 10;
 }
 
-.header-row {
+.slide-body {
+  /* slide별로 padding 적용 */
+}
+
+/* ==========================================================================
+   Progress Header (Intro 제외 모든 슬라이드)
+   Figma: px 20 py 12, gap 8, w 335
+   ========================================================================== */
+.progress-header {
+  background: #fff;
+  padding: 12px 20px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  color: #111;
-  margin-bottom: 8px;
+  flex-direction: column;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 
-.header-brand {
+.progress-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 0.2px;
+  color: #000;
+}
+
+.brand-semibold {
   font-weight: 600;
 }
 
-.header-brand strong {
-  font-weight: 700;
-}
-
-.save-status {
-  font-size: 11px;
-  color: #666;
-  min-height: 14px;
+.brand-medium {
   font-weight: 500;
-  transition: color .2s;
 }
-.save-status--saving { color: #999; }
-.save-status--saved  { color: #0a8f3f; }
-.save-status--error  { color: #c0392b; }
 
-.progress-wrap {
+.progress-track {
   height: 2px;
-  background: #eaeaea;
-  width: 100%;
+  background: #e6e6e6;
   overflow: hidden;
-  border-radius: 1px;
 }
 
-.progress-bar {
-  height: 100%;
-  background: #111;
-  width: 0%;
+.progress-fill {
+  height: 2px;
+  background: #000;
+  width: 0;
   transition: width .35s cubic-bezier(.2,.8,.2,1);
 }
 
 /* ==========================================================================
-   Main Content - 가운데 스크롤 영역
+   Save Status (하단 한구석에 작게)
    ========================================================================== */
-.main {
-  flex: 1 1 auto;
-  min-height: 0;            /* flex 자식의 overflow가 동작하려면 필수 */
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  padding: 28px 24px 32px;
+.save-status {
+  position: fixed;
+  bottom: 4px;
+  right: 8px;
+  font-size: 10px;
+  color: #999;
+  pointer-events: none;
+  z-index: 20;
+  transition: color .2s, opacity .2s;
 }
+.save-status:empty { opacity: 0; }
+.save-status--saving { color: #999; }
+.save-status--saved { color: #0a8f3f; }
+.save-status--error { color: #c0392b; }
 
-/* ---------- Slide 공통 ---------- */
-.slide {
-  animation: fadeIn .3s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.slide-title {
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.4;
-  color: #111;
-  margin-bottom: 8px;
-}
-
-.slide-hint {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-/* ---------- S1. Intro ---------- */
+/* ==========================================================================
+   S1. Intro — Figma 노드 45:1967
+   Body: gap 24, px 24 py 32, w 375
+   - intro-group: gap 80
+   - intro-text: gap 24
+   - title: Pretendard Bold 22 / 1.4 / #111
+   - desc: Pretendard SemiBold 22 / 1.4 / #111
+   - meta: gap 8, radius 8
+   ========================================================================== */
 .slide--intro {
-  padding-top: 8px;
+  padding: 32px 24px;
+  width: 100%;
 }
 
-.intro-head {
-  margin-bottom: 24px;
+.intro-group {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  align-items: flex-start;
+  max-width: 327px;
+}
+
+.intro-text {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: flex-start;
 }
 
 .intro-title {
-  font-size: 42px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  line-height: 1.5;
-  color: #000;
-}
-
-.intro-subtitle {
-  font-size: 22px;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-weight: 700;
+  font-size: 22px;
   line-height: 1.4;
   color: #111;
-  margin-top: 4px;
+  word-break: keep-all;
 }
 
 .intro-desc {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 600;
   font-size: 22px;
-  font-weight: 700;
   line-height: 1.4;
   color: #111;
-  margin-bottom: 80px;
   word-break: keep-all;
 }
 
@@ -188,162 +180,253 @@ input, textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
 }
 
 .meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   padding: 8px 0;
-  border-top: 1px solid #eee;
-}
-.meta-item:first-child {
-  border-top: none;
+  border-radius: 8px;
 }
 
 .meta-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: #111;
-  margin-bottom: 4px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: normal;
+  color: #000;
 }
 
 .meta-value {
-  font-size: 16px;
   font-weight: 700;
+  font-size: 16px;
+  line-height: normal;
+  color: #000;
+}
+
+/* ==========================================================================
+   S2. Respondent Info — Figma 노드 45:1991
+   Body: gap 80, p 20 (즉 80px 여백이 제목과 필드 사이)
+   Title: Pretendard Bold 22 / 1.4 / #111
+   Field: underline 입력 (border-bottom 1 #000, py 16 h 47)
+   Placeholder: Pretendard Regular 16 #999
+   익명 체크: Pretendard Bold 16 #000, gap 10
+   ========================================================================== */
+.slide--respondent {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  width: 100%;
+}
+
+.respondent-title {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.4;
   color: #111;
 }
 
-/* ---------- S2. Form ---------- */
-.slide--form .slide-title {
-  margin-bottom: 32px;
-}
-
-.form-fields {
+.respondent-fields {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.field {
+.respondent-input-row {
+  width: 100%;
+  max-width: 335px;
+}
+
+.underline-input {
+  width: 100%;
+  height: 47px;
+  border: none;
+  border-bottom: 1px solid #000;
+  padding: 16px 0;
+  background: #fff;
+  color: #111;
+  font-size: 16px;
+  outline: none;
+  border-radius: 0;
+}
+
+.underline-input::placeholder {
+  color: #999;
+  font-weight: 400;
+}
+
+.underline-input:disabled {
+  color: #999;
+  cursor: not-allowed;
+  border-bottom-color: #ccc;
+}
+
+/* ==========================================================================
+   S2. Guide — Figma 노드 45:2013
+   Body: gap 24, p 20 (두 블록 사이 24)
+   Block: Pretendard Bold 22 / 1.4 / #111 (여러 줄은 1.4 line)
+   ========================================================================== */
+.slide--guide {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.guide-block {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.4;
+  color: #111;
+  word-break: keep-all;
+  max-width: 335px;
+}
+
+.guide-block .url {
+  color: #000;
+}
+
+/* ==========================================================================
+   Task Slides — 공통
+   Body: gap 50, p 20
+   Task head: pill + title, gap 10
+   ========================================================================== */
+.slide--task {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  width: 100%;
+}
+
+.task-head {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.field-label {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111;
-  line-height: 1.5;
-  word-break: keep-all;
-}
-
-.text-input {
-  width: 100%;
-  padding: 14px 16px;
-  border: 1px solid #111;
-  border-radius: 0;
-  background: #fff;
-  color: #111;
-  outline: none;
-  transition: border-color .15s;
-}
-.text-input:focus {
-  border-color: #000;
-  box-shadow: inset 0 0 0 1px #000;
-}
-.text-input:disabled {
-  background: #f5f5f5;
-  color: #999;
-  cursor: not-allowed;
-  border-color: #ddd;
-}
-.text-input::placeholder {
-  color: #aaa;
-}
-
-.textarea-input {
-  width: 100%;
-  padding: 16px;
-  border: 1px solid #111;
-  border-radius: 0;
-  background: #fff;
-  color: #111;
-  outline: none;
-  resize: vertical;
-  min-height: 120px;
-  line-height: 1.5;
-  transition: border-color .15s;
-}
-.textarea-input:focus {
-  border-color: #000;
-  box-shadow: inset 0 0 0 1px #000;
-}
-.textarea-input::placeholder {
-  color: #aaa;
-}
-
-/* ---------- S3. Task ---------- */
-.slide--task .task-head {
-  margin-bottom: 24px;
+  align-items: flex-start;
+  max-width: 335px;
 }
 
 .task-pill {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 4px 10px;
-  background: #111;
+  background: #000;
   color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  border-radius: 4px;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0.24px;
+  white-space: pre;
 }
 
 .task-title {
-  font-size: 22px;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-weight: 700;
+  font-size: 24px;
   line-height: 1.4;
   color: #111;
-  margin-top: 12px;
+  word-break: keep-all;
+}
+.task-title p {
+  margin: 0;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.4;
 }
 
-.task-desc {
-  font-size: 16px;
-  color: #333;
-  margin-top: 12px;
-  line-height: 1.6;
+/* ---------- Task Section: description (19px Bold) ---------- */
+.task-description {
+  max-width: 335px;
+}
+.task-description p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.4;
+  color: #111;
+  margin: 0;
   word-break: keep-all;
 }
 
-.task-section {
-  margin-bottom: 28px;
+/* ---------- Task Section: plain_heading (Task 5-1, 5-2, 6, 7의 굵은 안내) ---------- */
+.task-plain-heading p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.4;
+  color: #000;
+  margin: 0;
+  word-break: keep-all;
 }
 
-.section-heading {
-  font-size: 18px;
-  font-weight: 600;
+/* ---------- Task Section: heading 19px (Task 3, 4 섹션 헤딩) ---------- */
+.task-heading-19 {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.4;
   color: #111;
-  margin-bottom: 16px;
-  line-height: 1.5;
+  word-break: keep-all;
+  max-width: 335px;
 }
 
-.checklist, .choices {
+/* ---------- Task Section: heading 16px Bold (Task 7 "현재 구현된 기능 확인") ---------- */
+.task-heading-16 {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #000;
+}
+
+/* ---------- Task Section: footnote ("기능이 작동했다면...") ---------- */
+.task-footnote p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #bfbfbf;
+  margin: 0;
+  word-break: keep-all;
+}
+
+/* ==========================================================================
+   Checkbox / Radio rows - Figma 표준
+   gap 10, checkbox 16x16 border 1 #111
+   ========================================================================== */
+.checklist, .checklist-block {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 10px;
 }
 
-/* ---------- Checkbox / Radio rows ---------- */
-.checkbox-row, .radio-row {
+.checklist--small {
+  gap: 16px;  /* Task 3 — Figma gap 16 */
+}
+
+/* 일반 row (체크박스 + 한 줄 라벨) */
+.check-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-  padding: 10px 4px;
   cursor: pointer;
   user-select: none;
-  min-height: 44px;
+  min-height: 20px;
   line-height: 1.5;
+  position: relative;
 }
 
-.checkbox-row input,
-.radio-row input {
+.check-row input[type="checkbox"],
+.check-row input[type="radio"] {
   position: absolute;
   opacity: 0;
   pointer-events: none;
@@ -353,27 +436,25 @@ input, textarea {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 16px;
   height: 16px;
-  border: 1.5px solid #111;
+  border: 1px solid #111;
   background: #fff;
-  flex-shrink: 0;
-  margin-top: 2px;
-  transition: background .15s, border-color .15s;
   position: relative;
+  transition: background .15s;
 }
 
-/* Radio는 원형 */
-.radio-row .check-box {
+.check-box--round {
   border-radius: 50%;
 }
 
-/* Checked 상태 - 체크마크 */
-.checkbox-row input:checked ~ .check-box {
-  background: #111;
-  border-color: #111;
+/* Checked - checkbox */
+.check-row input[type="checkbox"]:checked ~ .check-box {
+  background: #000;
+  border-color: #000;
 }
-.checkbox-row input:checked ~ .check-box::after {
+.check-row input[type="checkbox"]:checked ~ .check-box::after {
   content: '';
   position: absolute;
   left: 4px;
@@ -385,143 +466,344 @@ input, textarea {
   transform: rotate(45deg);
 }
 
-/* Radio checked 상태 - 내부 점 */
-.radio-row input:checked ~ .check-box {
-  border-color: #111;
-}
-.radio-row input:checked ~ .check-box::after {
+/* Checked - radio */
+.check-row input[type="radio"]:checked ~ .check-box::after {
   content: '';
   position: absolute;
   width: 8px;
   height: 8px;
-  background: #111;
+  background: #000;
   border-radius: 50%;
 }
 
-/* 포커스 상태 (접근성) */
-.checkbox-row input:focus-visible ~ .check-box,
-.radio-row input:focus-visible ~ .check-box {
+/* Focus */
+.check-row input:focus-visible ~ .check-box {
   outline: 2px solid #007bff;
   outline-offset: 2px;
 }
 
+/* Label variants */
 .check-label {
-  font-size: 16px;
-  color: #111;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  color: #000;
   line-height: 1.5;
   word-break: keep-all;
   flex: 1;
 }
 
-/* ---------- Policy note ---------- */
-.policy-note {
-  margin-top: 16px;
-  padding: 16px;
-  background: #f7f7f7;
-  border-left: 2px solid #111;
-}
-.policy-note p {
+.check-label--semibold-16 {
+  font-weight: 600;
   font-size: 16px;
-  line-height: 1.7;
-  color: #333;
-  margin-bottom: 10px;
-  word-break: keep-all;
 }
-.policy-note p:last-child {
-  margin-bottom: 0;
-  color: #666;
+
+.check-label--semibold-14 {
+  font-weight: 600;
   font-size: 14px;
 }
 
-/* ---------- Feedback block ---------- */
-.feedback-block {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #eee;
+.check-label--bold {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.check-label--bold-14 {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* 인라인 뱃지용 (Task 2-1) */
+.check-label--inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.inline-text {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #000;
+}
+
+.inline-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 2000px;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: #000;
+  line-height: normal;
+}
+
+.inline-badge--blue {
+  background: #d5eeff;
+}
+
+.inline-badge--red {
+  background: #ffdcdc;
+}
+
+/* ==========================================================================
+   checklist-block (Task 5-1, 5-2): 체크박스 위, 여러 줄 텍스트 아래
+   gap-y 10, line-height 1.6 for text
+   ========================================================================== */
+.check-block-row {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
 }
 
-/* ---------- Notice / Thanks ---------- */
-.slide--notice, .slide--thanks {
-  padding-top: 40px;
+.check-block-row input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.notice-title, .thanks-title {
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.4;
-  color: #111;
-  margin-bottom: 16px;
-  word-break: keep-all;
-}
-
-.notice-subtitle {
-  font-size: 18px;
+.check-block-text p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-weight: 600;
-  color: #333;
-  line-height: 1.5;
-  word-break: keep-all;
-}
-
-.thanks-desc {
   font-size: 16px;
-  line-height: 1.8;
-  color: #333;
+  line-height: 1.6;
+  color: #000;
+  margin: 0;
   word-break: keep-all;
 }
 
 /* ==========================================================================
-   Navigation (Bottom) - 하단 고정
+   Policy Note - Task 5-1
+   Pretendard Regular 13 / line 20 / #787878, gap 16
+   ========================================================================== */
+.policy-note {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 335px;
+}
+
+.policy-note p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 20px;
+  color: #787878;
+  margin: 0;
+  word-break: keep-all;
+}
+
+/* ==========================================================================
+   Feedback Textarea
+   라벨: Pretendard Bold 16 #b7b7b7, pt 60
+   입력: border 1 #000, h 120, p 16, placeholder Medium 14 #999
+   ========================================================================== */
+.feedback-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 60px;
+  max-width: 335px;
+  width: 100%;
+}
+
+.feedback-label p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #b7b7b7;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.textarea-input {
+  width: 100%;
+  max-width: 335px;
+  height: 120px;
+  border: 1px solid #000;
+  border-radius: 0;
+  padding: 16px;
+  background: #fff;
+  color: #111;
+  outline: none;
+  resize: none;
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.textarea-input::placeholder {
+  color: #999;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Notice (13번 마무리 안내) - Figma 노드 45:2507
+   Body: p 20, 내부 gap 없음
+   Text: Pretendard Bold 24 / 1.4 / #111
+   ========================================================================== */
+.slide--notice {
+  padding: 20px;
+  width: 100%;
+}
+
+.notice-text {
+  max-width: 335px;
+}
+
+.notice-text p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.4;
+  color: #111;
+  margin: 0;
+  word-break: keep-all;
+}
+
+/* ==========================================================================
+   Choice Slides (14~17)
+   Body: gap 50, p 20
+   Head: gap 18 (제목 + hint)
+   Title: Pretendard Bold 24 / 1.4 / #111
+   Hint: Pretendard Bold 14 / #000
+   Options: gap 10, 라벨 Pretendard Bold 14 #000
+   ========================================================================== */
+.slide--choice {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  width: 100%;
+}
+
+.choice-head {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+  max-width: 335px;
+}
+
+.choice-title p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.4;
+  color: #111;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.choice-hint {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #000;
+  margin: 0;
+}
+
+.choice-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   Thanks (18) - Figma 노드 45:2702
+   Body: p 20
+   Text: Pretendard Bold 24 / 1.4
+   Emphasis: #111, Dim: #a5a5a5
+   ========================================================================== */
+.slide--thanks {
+  padding: 20px;
+  width: 100%;
+}
+
+.thanks-text {
+  display: flex;
+  flex-direction: column;
+  gap: 22.4px;  /* 24px × 1.4 line-height 기반의 빈 줄 간격 */
+  max-width: 335px;
+}
+
+.thanks-block p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.4;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.thanks-block--emphasis p {
+  color: #111;
+}
+
+.thanks-block--dim p {
+  color: #a5a5a5;
+}
+
+/* ==========================================================================
+   Navigation (Bottom) - Figma 정확 스펙
+   bg #fff, p 24, gap 10, border-top 없음
+   Prev: bg #fff border 1 #787878, Pretendard Regular 16 #111
+   Next: bg #000 border 1 #000, Pretendard Bold 16 #fff
    ========================================================================== */
 .nav {
   flex-shrink: 0;
   background: #fff;
-  padding: 16px 24px 24px;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom)); /* iPhone 하단 safe area */
-  border-top: 1px solid #f0f0f0;
+  padding: 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .nav--single {
   justify-content: stretch;
 }
 
-.nav--dual {
-  justify-content: stretch;
-}
 .nav--dual .btn {
-  flex: 1;
+  flex: 1 0 0;
+  min-width: 0;
 }
 
 .btn {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   padding: 20px 16px;
   font-size: 16px;
-  font-weight: 700;
+  line-height: normal;
   border-radius: 0;
   transition: opacity .15s, background .15s;
-  min-height: 59px;
   width: 100%;
-  border: 1px solid #111;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .btn--primary {
-  background: #111;
+  background: #000;
   color: #fff;
+  border: 1px solid #000;
+  font-weight: 700;
 }
 .btn--primary:hover:not(:disabled) {
-  background: #000;
-}
-.btn--primary:active:not(:disabled) {
-  opacity: 0.9;
+  background: #1a1a1a;
 }
 
 .btn--secondary {
   background: #fff;
   color: #111;
-  border: 1px solid #111;
+  border: 1px solid #787878;
+  font-weight: 400;
 }
 .btn--secondary:hover:not(:disabled) {
   background: #f5f5f5;
@@ -530,41 +812,4 @@ input, textarea {
 .btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
-}
-
-/* ==========================================================================
-   반응형
-   ========================================================================== */
-@media (min-width: 641px) {
-  .shell {
-    box-shadow: 0 0 40px rgba(0,0,0,0.04);
-  }
-  .main {
-    padding: 40px 40px 32px;
-  }
-  .nav {
-    padding: 20px 40px 28px;
-  }
-  .intro-title {
-    font-size: 56px;
-  }
-}
-
-/* 아주 작은 화면 */
-@media (max-width: 360px) {
-  .main {
-    padding: 20px 16px 24px;
-  }
-  .nav {
-    padding: 12px 16px 20px;
-  }
-  .intro-title {
-    font-size: 36px;
-  }
-  .intro-subtitle,
-  .intro-desc,
-  .slide-title,
-  .task-title {
-    font-size: 20px;
-  }
 }
