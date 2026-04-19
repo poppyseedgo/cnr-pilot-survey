@@ -27,6 +27,7 @@ const state = {
 // DOM 참조
 // ----------------------------------------------------------------------------
 const $root = document.getElementById('app');
+const $nav = document.getElementById('nav');
 const $progressBar = document.getElementById('progress-bar');
 const $progressLabel = document.getElementById('progress-label');
 const $saveStatus = document.getElementById('save-status');
@@ -280,6 +281,8 @@ function renderThanks(slide) {
 
 // ----------------------------------------------------------------------------
 // 네비게이션 버튼 렌더링
+// nav 요소 자체에 주입되므로 <div class="nav"> 래퍼 제거.
+// modifier 클래스(single/dual)는 render()에서 $nav.className으로 세팅.
 // ----------------------------------------------------------------------------
 function renderNav(slide) {
   const isFirst = state.current_step === 0;
@@ -287,37 +290,40 @@ function renderNav(slide) {
 
   // Intro 화면은 단일 버튼
   if (slide.type === 'intro') {
-    return `
-      <div class="nav nav--single">
+    return {
+      modifier: 'nav--single',
+      html: `
         <button type="button" id="btn-next" class="btn btn--primary">
           ${esc(slide.nextLabel || '다음')}
         </button>
-      </div>
-    `;
+      `,
+    };
   }
 
   // Thanks 화면은 닫기 버튼
   if (slide.type === 'thanks') {
-    return `
-      <div class="nav nav--single">
+    return {
+      modifier: 'nav--single',
+      html: `
         <button type="button" id="btn-close" class="btn btn--primary">
           ${esc(slide.closeLabel || '닫기')}
         </button>
-      </div>
-    `;
+      `,
+    };
   }
 
   // 일반 슬라이드: 이전 + 다음
-  return `
-    <div class="nav nav--dual">
+  return {
+    modifier: 'nav--dual',
+    html: `
       <button type="button" id="btn-prev" class="btn btn--secondary" ${isFirst ? 'disabled' : ''}>
         이전
       </button>
       <button type="button" id="btn-next" class="btn btn--primary">
         ${isLast ? '제출' : '다음'}
       </button>
-    </div>
-  `;
+    `,
+  };
 }
 
 // ----------------------------------------------------------------------------
@@ -325,14 +331,17 @@ function renderNav(slide) {
 // ----------------------------------------------------------------------------
 function render() {
   const slide = SURVEY_SLIDES[state.current_step];
-  $root.innerHTML = `
-    ${renderSlide(slide)}
-    ${renderNav(slide)}
-  `;
+  const navData = renderNav(slide);
+
+  // 본문은 main(#app)에, 네비게이션은 별도 nav(#nav)에 각각 주입
+  $root.innerHTML = renderSlide(slide);
+  $nav.innerHTML = navData.html;
+  $nav.className = `nav ${navData.modifier}`;
+
   updateProgress();
   bindSlideEvents(slide);
-  // 스크롤을 맨 위로
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  // main 스크롤 영역을 맨 위로
+  $root.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 // ----------------------------------------------------------------------------
