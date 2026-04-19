@@ -108,6 +108,7 @@ function renderSlide(slide) {
     case 'notice':      return renderNotice(slide);
     case 'choice':      return renderChoice(slide);
     case 'thanks':      return renderThanks(slide);
+    case 'submit_done': return renderThanks(slide);  // 구조 동일, 버튼만 renderNav에서 분기
     default:            return `<div>Unknown slide: ${slide.type}</div>`;
   }
 }
@@ -395,9 +396,8 @@ function renderThanks(slide) {
 // ============================================================================
 function renderNav(slide) {
   const isFirst = state.current_step === 0;
-  const isLast = state.current_step === TOTAL_SLIDES - 1;
 
-  // Intro 화면은 단일 primary 버튼
+  // Intro — 단일 primary "테스트 시작하기"
   if (slide.type === 'intro') {
     return {
       modifier: 'nav--single',
@@ -405,20 +405,34 @@ function renderNav(slide) {
     };
   }
 
-  // Thanks 화면: 단일 "닫기" (secondary 스타일 — Figma: bg #fff border #787878)
-  if (slide.type === 'thanks') {
+  // Submit Done (19) — 이전 + 처음으로 (outline-dark)
+  if (slide.type === 'submit_done') {
     return {
-      modifier: 'nav--single',
-      html: `<button type="button" id="btn-close" class="btn btn--secondary">${esc(slide.closeLabel || '닫기')}</button>`,
+      modifier: 'nav--dual',
+      html: `
+        <button type="button" id="btn-prev" class="btn btn--secondary">이전</button>
+        <button type="button" id="btn-restart" class="btn btn--outline-dark">처음으로</button>
+      `,
     };
   }
 
-  // 일반: 이전 + 다음
+  // Thanks (18) — 이전 + 다음 (다음 누르면 submit_done으로 이동 + 제출 확정)
+  if (slide.type === 'thanks') {
+    return {
+      modifier: 'nav--dual',
+      html: `
+        <button type="button" id="btn-prev" class="btn btn--secondary">이전</button>
+        <button type="button" id="btn-next" class="btn btn--primary">다음</button>
+      `,
+    };
+  }
+
+  // 일반 (2~17): 이전 + 다음
   return {
     modifier: 'nav--dual',
     html: `
       <button type="button" id="btn-prev" class="btn btn--secondary" ${isFirst ? 'disabled' : ''}>이전</button>
-      <button type="button" id="btn-next" class="btn btn--primary">${isLast ? '제출' : '다음'}</button>
+      <button type="button" id="btn-next" class="btn btn--primary">다음</button>
     `,
   };
 }
@@ -429,8 +443,8 @@ function renderNav(slide) {
 function render() {
   const slide = SURVEY_SLIDES[state.current_step];
 
-  // Intro는 프로그레스 헤더 없음, 나머지는 있음
-  const hasHeader = slide.type !== 'intro';
+  // Intro + hideHeader 슬라이드는 progress header 없음
+  const hasHeader = slide.type !== 'intro' && !slide.hideHeader;
   const headerHtml = hasHeader ? renderProgressHeader() : '';
 
   $root.innerHTML = `
@@ -438,13 +452,11 @@ function render() {
     <div class="slide-body">${renderSlide(slide)}</div>
   `;
 
-  // 헤더 있을 때는 progress bar 찾아서 업데이트
   if (hasHeader) {
     const bar = $root.querySelector('#progress-bar');
     if (bar) bar.style.width = `${slide.progressPct || 0}%`;
   }
 
-  // Nav 주입
   const navData = renderNav(slide);
   $nav.innerHTML = navData.html;
   $nav.className = `nav ${navData.modifier}`;
@@ -523,10 +535,10 @@ function bindSlideEvents(slide) {
   // 네비게이션
   const $prev = document.getElementById('btn-prev');
   const $next = document.getElementById('btn-next');
-  const $close = document.getElementById('btn-close');
+  const $restart = document.getElementById('btn-restart');
   if ($prev) $prev.addEventListener('click', goPrev);
   if ($next) $next.addEventListener('click', goNext);
-  if ($close) $close.addEventListener('click', goClose);
+  if ($restart) $restart.addEventListener('click', goRestart);
 }
 
 // ============================================================================
@@ -540,34 +552,34 @@ async function goPrev() {
 }
 
 async function goNext() {
+  const slide = SURVEY_SLIDES[state.current_step];
   const isLast = state.current_step === TOTAL_SLIDES - 1;
-  if (isLast) {
+
+  // 마지막 슬라이드(19 submit_done)에서는 "다음" 버튼이 없으므로 여기 올 일 없음
+  if (isLast) return;
+
+  // Thanks(18) → Submit Done(19) 전환 시 최종 제출 확정
+  if (slide.type === 'thanks') {
     state.is_completed = true;
-    await saveNow(state);
-    return;
   }
-  if (state.current_step === TOTAL_SLIDES - 2) {
-    state.is_completed = true;
-  }
+
   state.current_step += 1;
   await saveNow(state);
   render();
 }
 
-async function goClose() {
-  state.is_completed = true;
+/**
+ * 처음으로 돌아가기 — UI만 첫 페이지로 이동, 데이터는 유지.
+ *
+ * - state.current_step만 0으로 되돌려서 UI만 첫 페이지로 이동
+ * - 응답 데이터/세션/localStorage는 그대로 유지
+ * - 이미 제출된 is_completed=true 상태도 유지 (DB 레코드 보존)
+ * - 사용자가 다시 "다음"을 눌러 전체 플로우를 되짚어볼 수 있음
+ */
+async function goRestart() {
+  state.current_step = 0;
   await saveNow(state);
-  $root.innerHTML = `
-    <div class="slide-body">
-      <div class="slide slide--thanks">
-        <div class="thanks-text">
-          <div class="thanks-block thanks-block--emphasis"><p>제출 완료</p></div>
-          <div class="thanks-block thanks-block--dim"><p>응답이 안전하게 저장되었습니다.</p><p>이 창을 닫으셔도 됩니다.</p></div>
-        </div>
-      </div>
-    </div>
-  `;
-  $nav.innerHTML = '';
+  render();
 }
 
 // ============================================================================
