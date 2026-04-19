@@ -7,7 +7,9 @@ export const SURVEY_SLIDES = [
     id: 's1_intro',
     type: 'intro',
     progressPct: 0,
-    title: 'C&R SPACE 파일럿 테스트',
+    heading: 'C&R SPACE',
+    // UAT를 3줄로 쪼갬 (Figma: User / Acceptance / Testing)
+    subheadingLines: ['User', 'Acceptance', 'Testing'],
     description: '회의실 예약 시스템 정식 오픈 전, 실사용자 집단의 응답을 수집하는 필수 검증 단계입니다.',
     meta: [
       { label: '소요 시간', value: '15 — 20 min' },
@@ -33,8 +35,21 @@ export const SURVEY_SLIDES = [
     type: 'guide',
     progressPct: 60 / 335 * 100,
     blocks: [
-      { type: 'html', content: '브라우저에서 <span class="url">cnr-space.pages.dev</span> 접속 후' },
-      { type: 'plain', content: '7개의 Task를 순서대로 수행해 주세요.' },
+      {
+        color: '#0a0a0a',
+        lines: [
+          { type: 'text', value: '브라우저에서' },
+          { type: 'link', value: 'cnr-space.pages.dev', href: 'https://cnr-space.pages.dev' },
+          { type: 'text', value: '접속 후' },
+        ],
+      },
+      {
+        color: '#111',
+        lines: [
+          { type: 'text', value: '7개의 Task를' },
+          { type: 'text', value: '순서대로 수행해 주세요.' },
+        ],
+      },
     ],
   },
 

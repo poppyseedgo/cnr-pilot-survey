@@ -158,12 +158,29 @@ input, textarea {
   align-items: flex-start;
 }
 
-.intro-title {
+.intro-heading {
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-weight: 700;
-  font-size: 22px;
-  line-height: 1.4;
+  font-size: 40px;
+  line-height: 1.18;
   color: #111;
+  text-transform: uppercase;
+  word-break: keep-all;
+}
+
+.intro-subheading {
+  display: flex;
+  flex-direction: column;
+}
+
+.intro-subheading p {
+  font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.18;
+  color: #111;
+  text-transform: uppercase;
+  margin: 0;
   word-break: keep-all;
 }
 
@@ -266,8 +283,10 @@ input, textarea {
 
 /* ==========================================================================
    S2. Guide — Figma 노드 45:2013
-   Body: gap 24, p 20 (두 블록 사이 24)
-   Block: Pretendard Bold 22 / 1.4 / #111 (여러 줄은 1.4 line)
+   Body: gap 24, p 20 (블록 간 24)
+   Block 내부: gap 4 (줄 사이)
+   Text: Pretendard Bold 22 / 1.4 / #0a0a0a or #111
+   Link: color #5ab8ff, new tab, underline 없음
    ========================================================================== */
 .slide--guide {
   padding: 20px;
@@ -278,17 +297,36 @@ input, textarea {
 }
 
 .guide-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 335px;
+  color: #111;
+}
+
+.guide-line {
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
   font-weight: 700;
   font-size: 22px;
   line-height: 1.4;
-  color: #111;
+  margin: 0;
   word-break: keep-all;
-  max-width: 335px;
 }
 
-.guide-block .url {
-  color: #000;
+.guide-link {
+  color: #5ab8ff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+
+.guide-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.guide-link:active {
+  opacity: 0.7;
 }
 
 /* ==========================================================================

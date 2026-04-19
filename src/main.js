@@ -121,11 +121,16 @@ function renderIntro(slide) {
     </div>
   `).join('');
 
+  const subheadingHtml = slide.subheadingLines
+    .map(line => `<p>${esc(line)}</p>`)
+    .join('');
+
   return `
     <div class="slide slide--intro">
       <div class="intro-group">
         <div class="intro-text">
-          <h1 class="intro-title">${esc(slide.title)}</h1>
+          <h1 class="intro-heading">${esc(slide.heading)}</h1>
+          <div class="intro-subheading">${subheadingHtml}</div>
           <p class="intro-desc">${esc(slide.description)}</p>
         </div>
         <div class="meta-list">${metaHtml}</div>
@@ -167,12 +172,20 @@ function renderRespondent(slide) {
 
 // ---------- 3. Guide ----------
 function renderGuide(slide) {
-  const blocksHtml = slide.blocks.map(b => {
-    if (b.type === 'html') {
-      // cnr-space URL 강조용
-      return `<div class="guide-block">${b.content}</div>`;
-    }
-    return `<div class="guide-block">${esc(b.content)}</div>`;
+  const blocksHtml = slide.blocks.map(block => {
+    const styleAttr = block.color ? ` style="color: ${block.color}"` : '';
+    const linesHtml = block.lines.map(line => {
+      if (line.type === 'link') {
+        // 새 창 열기 + 보안 (rel="noopener noreferrer"로 window.opener 공격 차단)
+        return `
+          <p class="guide-line">
+            <a href="${esc(line.href)}" target="_blank" rel="noopener noreferrer" class="guide-link">${esc(line.value)}</a>
+          </p>
+        `;
+      }
+      return `<p class="guide-line">${esc(line.value)}</p>`;
+    }).join('');
+    return `<div class="guide-block"${styleAttr}>${linesHtml}</div>`;
   }).join('');
 
   return `
