@@ -544,14 +544,22 @@ function bindSlideEvents(slide) {
 // ============================================================================
 // 네비게이션
 // ============================================================================
-async function goPrev() {
+// ============================================================================
+// 네비게이션
+// ----------------------------------------------------------------------------
+// 설계 원칙: UI 이동은 즉시, 저장은 백그라운드 (fire-and-forget).
+// saveNow()를 await하면 네트워크 지연/실패 시 버튼 클릭이 먹통이 됨.
+// localStorage 백업이 saveNow 내부에서 즉시 동기 수행되므로 데이터 유실은 없음.
+// ============================================================================
+
+function goPrev() {
   if (state.current_step <= 0) return;
   state.current_step -= 1;
-  await saveNow(state);
+  saveNow(state);  // await 제거 — 백그라운드 저장
   render();
 }
 
-async function goNext() {
+function goNext() {
   const slide = SURVEY_SLIDES[state.current_step];
   const isLast = state.current_step === TOTAL_SLIDES - 1;
 
@@ -564,7 +572,7 @@ async function goNext() {
   }
 
   state.current_step += 1;
-  await saveNow(state);
+  saveNow(state);  // await 제거 — 백그라운드 저장
   render();
 }
 
@@ -576,9 +584,9 @@ async function goNext() {
  * - 이미 제출된 is_completed=true 상태도 유지 (DB 레코드 보존)
  * - 사용자가 다시 "다음"을 눌러 전체 플로우를 되짚어볼 수 있음
  */
-async function goRestart() {
+function goRestart() {
   state.current_step = 0;
-  await saveNow(state);
+  saveNow(state);  // await 제거 — 백그라운드 저장
   render();
 }
 
