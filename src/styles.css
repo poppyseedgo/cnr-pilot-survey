@@ -851,3 +851,6 @@ input, textarea {
   opacity: 0.3;
   cursor: not-allowed;
 }
+.task-footnote p {
+  padding-bottom: 2px;
+}
