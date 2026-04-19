@@ -124,7 +124,6 @@ function renderSlide(slide) {
     case 'notice':      return renderNotice(slide);
     case 'choice':      return renderChoice(slide);
     case 'thanks':      return renderThanks(slide);
-    case 'submit_done': return renderThanks(slide);
     default:            return `<div>Unknown slide: ${slide.type}</div>`;
   }
 }
@@ -400,24 +399,12 @@ function renderNav(slide) {
     };
   }
 
-  // Submit Done (19) — 이전 + 처음으로
-  if (slide.type === 'submit_done') {
-    return {
-      modifier: 'nav--dual',
-      html: `
-        <button type="button" id="btn-prev" class="btn btn--secondary">이전</button>
-        <button type="button" id="btn-restart" class="btn btn--outline-dark">처음으로</button>
-      `,
-    };
-  }
-
-  // Thanks (18) — 이전 + 다음
+  // Thanks (18) — 이전 버튼만
   if (slide.type === 'thanks') {
     return {
-      modifier: 'nav--dual',
+      modifier: 'nav--single',
       html: `
         <button type="button" id="btn-prev" class="btn btn--secondary">이전</button>
-        <button type="button" id="btn-next" class="btn btn--primary">다음</button>
       `,
     };
   }
@@ -546,13 +533,11 @@ function bindSlideEvents(slide) {
   // 네비게이션 — 가장 중요, 반드시 동작해야 함
   const $prev = document.getElementById('btn-prev');
   const $next = document.getElementById('btn-next');
-  const $restart = document.getElementById('btn-restart');
 
-  console.log('[C&R Pilot] nav bind:', { hasPrev: !!$prev, hasNext: !!$next, hasRestart: !!$restart });
+  console.log('[C&R Pilot] nav bind:', { hasPrev: !!$prev, hasNext: !!$next });
 
   if ($prev) $prev.addEventListener('click', handlePrev);
   if ($next) $next.addEventListener('click', handleNext);
-  if ($restart) $restart.addEventListener('click', handleRestart);
 }
 
 // ============================================================================
@@ -573,12 +558,11 @@ function handlePrev() {
 function handleNext() {
   console.log('[C&R Pilot] handleNext clicked, current_step=', state.current_step);
   try {
-    const slide = SURVEY_SLIDES[state.current_step];
     const isLast = state.current_step === TOTAL_SLIDES - 1;
     if (isLast) return;
 
-    // Thanks(18) → Submit Done(19) 전환 시 최종 제출 확정
-    if (slide && slide.type === 'thanks') {
+    // 다음이 마지막 슬라이드(Thanks)이면 제출 확정
+    if (state.current_step === TOTAL_SLIDES - 2) {
       state.is_completed = true;
     }
 
@@ -587,17 +571,6 @@ function handleNext() {
     safeSave();         // 2. 저장은 백그라운드
   } catch (err) {
     console.error('[C&R Pilot] handleNext error:', err);
-  }
-}
-
-function handleRestart() {
-  console.log('[C&R Pilot] handleRestart clicked');
-  try {
-    state.current_step = 0;
-    render();           // 1. 화면 먼저 전환
-    safeSave();         // 2. 저장은 백그라운드
-  } catch (err) {
-    console.error('[C&R Pilot] handleRestart error:', err);
   }
 }
 

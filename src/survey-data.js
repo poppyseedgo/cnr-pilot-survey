@@ -340,7 +340,7 @@ export const SURVEY_SLIDES = [
     ],
   },
 
-  // ---------- 18. Thanks ----------
+  // ---------- 18. Thanks (마지막 페이지) ----------
   {
     id: 's4_thanks',
     type: 'thanks',
@@ -351,7 +351,7 @@ export const SURVEY_SLIDES = [
       { emphasis: false, lines: ['ZOOM 예약, 포인터 예약 등', '더 확장된 기능도 기대해주세요.'] },
       { emphasis: true, lines: ['참여해 주셔서', '진심으로 감사드립니다.'] },
     ],
-    closeLabel: '닫기',
+    // 이전 버튼만
   },
 ];
 
