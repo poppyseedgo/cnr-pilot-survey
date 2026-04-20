@@ -62,9 +62,6 @@ input, textarea {
   background: #fff;
 }
 
-.slide-body {
-  /* slide별로 padding 적용 */
-}
 
 /* ==========================================================================
    Progress Header (Intro 제외 모든 슬라이드)
