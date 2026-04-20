@@ -594,9 +594,34 @@ async function init() {
   render();
 }
 
+// ============================================================================
+// 라우팅: #/admin 해시면 관리자 페이지로, 아니면 설문
+// - 해시 라우팅을 쓰는 이유: Vercel/Cloudflare SPA는 기본적으로 서버 라우팅이
+//   없어서 /admin 직접 접근 시 404. 해시(#)는 서버로 전송되지 않으므로 안전.
+// - admin.js는 동적 import로 lazy load → 일반 사용자 번들에 포함 안 됨
+// ============================================================================
+function isAdminRoute() {
+  const h = (window.location.hash || '').replace(/^#\/?/, '');
+  return h === 'admin';
+}
+
+async function bootAdminRoute() {
+  // 관리자 스타일 동적 로드
+  await import('./admin/admin-styles.css');
+  const { bootAdmin } = await import('./admin/admin.js');
+  bootAdmin();
+}
+
+// 해시 변경 시 재부팅 (설문 ↔ 관리자 전환)
+window.addEventListener('hashchange', () => {
+  window.location.reload();
+});
+
 if (new URLSearchParams(window.location.search).get('reset') === '1') {
   resetSession();
   window.location.replace(window.location.pathname);
+} else if (isAdminRoute()) {
+  bootAdminRoute();
 } else {
   init();
 }
