@@ -281,6 +281,10 @@ function renderStatsAndList(rows) {
       ${statCard('평균 소요(분)', stats.avgDuration, null)}
     </div>
 
+    ${renderChoiceStats(rows)}
+
+    ${renderFeedbackCollection(rows)}
+
     <div class="admin-list-section">
       <div class="admin-list-head">
         <h2 class="admin-section-title">응답자 목록</h2>
@@ -321,6 +325,193 @@ function statCard(label, value, sub) {
       <div class="admin-stat-label">${esc(label)}</div>
       <div class="admin-stat-value">${esc(value)}</div>
       ${sub ? `<div class="admin-stat-sub">${esc(sub)}</div>` : ''}
+    </div>
+  `;
+}
+
+// ============================================================================
+// 객관식 통계 섹션 (슬라이드 14, 15, 16, 17번)
+// ----------------------------------------------------------------------------
+// - 단일 선택(single): 한 명당 1표
+// - 다중 선택(multi): 한 명당 여러 표 가능 → 응답자 대비 선택률(%) 계산
+// - 분모: "해당 질문에 응답한 사람 수" (응답 안 한 사람 제외)
+// ============================================================================
+function renderChoiceStats(rows) {
+  // survey-data에서 choice 타입 슬라이드 추출
+  const choiceSlides = SURVEY_SLIDES.filter(s => s.type === 'choice');
+  if (choiceSlides.length === 0) return '';
+
+  const sectionsHtml = choiceSlides.map(slide => {
+    const key = slide.key;
+    const isMulti = slide.choiceKind === 'multi';
+
+    // 해당 질문에 응답한 사람만 필터링
+    const respondents = rows.filter(r => {
+      const ans = r.answers?.[key];
+      if (isMulti) return Array.isArray(ans) && ans.length > 0;
+      return ans != null && ans !== '';
+    });
+    const respondentCount = respondents.length;
+
+    // 각 옵션별 카운트
+    const counts = {};
+    for (const opt of slide.options) counts[opt.value] = 0;
+
+    for (const r of respondents) {
+      const ans = r.answers[key];
+      if (isMulti && Array.isArray(ans)) {
+        for (const v of ans) {
+          if (counts[v] != null) counts[v]++;
+        }
+      } else if (!isMulti && counts[ans] != null) {
+        counts[ans]++;
+      }
+    }
+
+    // 정렬: 카운트 내림차순
+    const sortedOptions = [...slide.options].sort(
+      (a, b) => counts[b.value] - counts[a.value]
+    );
+
+    // 최대값 (막대 너비 기준)
+    const maxCount = Math.max(1, ...Object.values(counts));
+
+    const barsHtml = sortedOptions.map(opt => {
+      const count = counts[opt.value];
+      const pct = respondentCount > 0 ? Math.round(count / respondentCount * 100) : 0;
+      const barWidth = (count / maxCount) * 100;
+      return `
+        <div class="admin-chart-row">
+          <div class="admin-chart-label">${esc(opt.label)}</div>
+          <div class="admin-chart-bar-wrap">
+            <div class="admin-chart-bar" style="width: ${barWidth}%"></div>
+            <span class="admin-chart-value">${count}명 <span class="admin-chart-pct">(${pct}%)</span></span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const kindLabel = isMulti ? '복수 선택' : '단일 선택';
+    const title = (slide.title || '').replace(/\n/g, ' ');
+
+    return `
+      <div class="admin-chart-section">
+        <div class="admin-chart-head">
+          <h3 class="admin-chart-title">${esc(title)}</h3>
+          <div class="admin-chart-meta">
+            <span class="admin-chart-kind">${kindLabel}</span>
+            <span class="admin-chart-count">응답자 ${respondentCount}명</span>
+          </div>
+        </div>
+        ${respondentCount > 0
+          ? `<div class="admin-chart-bars">${barsHtml}</div>`
+          : `<div class="admin-muted admin-chart-empty">아직 응답이 없습니다.</div>`}
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="admin-section admin-section--choices">
+      <div class="admin-section-header">
+        <h2 class="admin-section-title">최종 평가 응답 통계</h2>
+        <span class="admin-section-sub">문항 14~17 · 전체 응답자 분포</span>
+      </div>
+      <div class="admin-chart-list">
+        ${sectionsHtml}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
+// 서술형 피드백 모음 섹션 (Task 3, 5-1, 6, 7의 feedback textarea)
+// ----------------------------------------------------------------------------
+// - 공백/null 응답은 제외
+// - Task별로 그룹핑하여 카드로 나열
+// - 응답자 이름(또는 익명) + 응답 시각 표시
+// ============================================================================
+function renderFeedbackCollection(rows) {
+  // survey-data에서 모든 feedback 섹션 키 + 라벨 추출
+  const feedbackMeta = []; // [{key, taskLabel, taskTitle, label}]
+  for (const slide of SURVEY_SLIDES) {
+    if (slide.type !== 'task') continue;
+    for (const sec of slide.sections || []) {
+      if (sec.type === 'feedback') {
+        feedbackMeta.push({
+          key: sec.key,
+          taskLabel: slide.taskLabel,
+          taskTitle: (slide.title || '').replace(/\n/g, ' '),
+          label: (sec.label || '').replace(/\n/g, ' '),
+        });
+      }
+    }
+  }
+
+  if (feedbackMeta.length === 0) return '';
+
+  // 각 피드백별로 실제 응답이 있는 항목 수집
+  const sectionsHtml = feedbackMeta.map(meta => {
+    const entries = [];
+    for (const r of rows) {
+      const ans = r.answers?.[meta.key];
+      if (ans && String(ans).trim()) {
+        entries.push({
+          name: r.anonymous ? '익명' : (r.respondent_name || '(미입력)'),
+          text: String(ans).trim(),
+          updated_at: r.updated_at,
+        });
+      }
+    }
+
+    // 최신순 정렬
+    entries.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+    const entriesHtml = entries.length > 0
+      ? entries.map(e => `
+          <div class="admin-feedback-item">
+            <div class="admin-feedback-meta">
+              <span class="admin-feedback-name">${esc(e.name)}</span>
+              <span class="admin-feedback-time">${esc(formatDate(e.updated_at))}</span>
+            </div>
+            <div class="admin-feedback-text">${esc(e.text).replace(/\n/g, '<br>')}</div>
+          </div>
+        `).join('')
+      : `<div class="admin-muted admin-feedback-empty">아직 응답이 없습니다.</div>`;
+
+    return `
+      <div class="admin-feedback-section">
+        <div class="admin-feedback-head">
+          <h3 class="admin-feedback-title">
+            <span class="admin-feedback-task">${esc(meta.taskLabel)}</span>
+            ${esc(meta.taskTitle)}
+          </h3>
+          <div class="admin-feedback-question">"${esc(meta.label)}"</div>
+          <span class="admin-feedback-count">${entries.length}건 응답</span>
+        </div>
+        <div class="admin-feedback-list">
+          ${entriesHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // 전체 응답 수
+  const totalFeedbacks = feedbackMeta.reduce((sum, meta) => {
+    return sum + rows.filter(r => {
+      const ans = r.answers?.[meta.key];
+      return ans && String(ans).trim();
+    }).length;
+  }, 0);
+
+  return `
+    <div class="admin-section admin-section--feedback">
+      <div class="admin-section-header">
+        <h2 class="admin-section-title">서술형 피드백 모음</h2>
+        <span class="admin-section-sub">총 ${totalFeedbacks}건 · Task 3 · 5-1 · 6 · 7</span>
+      </div>
+      <div class="admin-feedback-sections">
+        ${sectionsHtml}
+      </div>
     </div>
   `;
 }

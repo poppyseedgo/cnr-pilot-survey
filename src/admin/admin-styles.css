@@ -454,6 +454,260 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ==========================================================================
+   공통 섹션 헤더 (객관식 통계 / 피드백 모음)
+   ========================================================================== */
+.admin-section {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.admin-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-section-header .admin-section-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #111;
+}
+
+.admin-section-sub {
+  font-size: 12px;
+  color: #787878;
+}
+
+/* ==========================================================================
+   객관식 통계 섹션 (바/차트)
+   ========================================================================== */
+.admin-chart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-chart-section {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 6px;
+}
+
+.admin-chart-head {
+  margin-bottom: 12px;
+}
+
+.admin-chart-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #111;
+  margin-bottom: 6px;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.admin-chart-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: #787878;
+}
+
+.admin-chart-kind {
+  display: inline-block;
+  padding: 2px 6px;
+  background: #111;
+  color: #fff;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.admin-chart-count {
+  font-weight: 500;
+}
+
+.admin-chart-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-chart-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) 2fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-chart-label {
+  font-size: 13px;
+  color: #111;
+  font-weight: 500;
+  word-break: keep-all;
+  line-height: 1.4;
+}
+
+.admin-chart-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  background: #e6e6e6;
+  height: 24px;
+  border-radius: 3px;
+  overflow: hidden;
+  padding-right: 10px;
+}
+
+.admin-chart-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #111 0%, #333 100%);
+  border-radius: 3px;
+  transition: width .4s cubic-bezier(.2, .8, .2, 1);
+  min-width: 2px;
+}
+
+.admin-chart-value {
+  position: relative;
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  mix-blend-mode: difference;
+  z-index: 1;
+  white-space: nowrap;
+  padding: 0 8px;
+}
+
+.admin-chart-pct {
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.admin-chart-empty {
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   서술형 피드백 모음 섹션
+   ========================================================================== */
+.admin-feedback-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.admin-feedback-section {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 6px;
+  border-left: 3px solid #111;
+}
+
+.admin-feedback-head {
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.admin-feedback-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #111;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-feedback-task {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #111;
+  color: #fff;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.admin-feedback-question {
+  font-size: 12px;
+  color: #787878;
+  margin-bottom: 8px;
+  font-style: italic;
+  word-break: keep-all;
+}
+
+.admin-feedback-count {
+  display: inline-block;
+  font-size: 11px;
+  color: #555;
+  background: #fff;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.admin-feedback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-feedback-item {
+  background: #fff;
+  padding: 12px 14px;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.admin-feedback-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.admin-feedback-name {
+  font-weight: 700;
+  font-size: 12px;
+  color: #111;
+}
+
+.admin-feedback-time {
+  font-size: 11px;
+  color: #999;
+  white-space: nowrap;
+}
+
+.admin-feedback-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #333;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.admin-feedback-empty {
+  padding: 12px;
+  text-align: center;
+  font-size: 13px;
+}
+
 /* ---------- Mobile ---------- */
 @media (max-width: 640px) {
   .admin { padding: 16px; }
@@ -461,4 +715,13 @@
   .admin-header-actions { flex-wrap: wrap; }
   .admin-stat-value { font-size: 22px; }
   .admin-modal-body { max-height: 60vh; padding: 16px; }
+
+  /* 모바일 차트: 레이블 위, 바 아래 */
+  .admin-chart-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .admin-feedback-title { font-size: 13px; }
+  .admin-feedback-question { font-size: 11px; }
 }
