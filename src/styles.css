@@ -878,3 +878,27 @@ ld {
     margin: 0;
     word-break: keep-all;
 }
+.textarea-input {
+    width: 100%;
+    max-width: 100%;/**100%변경**/
+    height: 120px;
+    border: 1px solid #000;
+    border-radius: 0;
+    padding: 16px;
+    background: #fff;
+    color: #111;
+    outline: none;
+    resize: none;
+    font-family: Pretendard Variable, Pretendard, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+}
+.feedback-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 60px;
+    max-width: 100%;/**100%변경**/
+    width: 100%;
+}
