@@ -12,7 +12,7 @@ export const SURVEY_SLIDES = [
     subheadingLines: ['User', 'Acceptance', 'Testing'],
     description: '회의실 예약 시스템 정식 오픈 전, 실사용자 집단의 응답을 수집하는 필수 검증 단계입니다.',
     meta: [
-      { label: '소요 시간', value: '15 — 20 min' },
+      { label: '소요 시간', value: '10 — 15 min' },
       { label: '총 Task 수', value: '07' },
       { label: '자동 저장', value: '실시간' },
     ],

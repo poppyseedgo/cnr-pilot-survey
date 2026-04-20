@@ -62,6 +62,9 @@ input, textarea {
   background: #fff;
 }
 
+.slide-body {
+  /* slide별로 padding 적용 */
+}
 
 /* ==========================================================================
    Progress Header (Intro 제외 모든 슬라이드)
@@ -484,12 +487,14 @@ input, textarea {
   border-radius: 50%;
 }
 
-/* Checked - checkbox */
-.check-row input[type="checkbox"]:checked ~ .check-box {
+/* Checked - checkbox (일반 + 블록 row 공통) */
+.check-row input[type="checkbox"]:checked ~ .check-box,
+.check-block-row input[type="checkbox"]:checked ~ .check-box {
   background: #000;
   border-color: #000;
 }
-.check-row input[type="checkbox"]:checked ~ .check-box::after {
+.check-row input[type="checkbox"]:checked ~ .check-box::after,
+.check-block-row input[type="checkbox"]:checked ~ .check-box::after {
   content: '';
   position: absolute;
   left: 4px;
@@ -512,7 +517,8 @@ input, textarea {
 }
 
 /* Focus */
-.check-row input:focus-visible ~ .check-box {
+.check-row input:focus-visible ~ .check-box,
+.check-block-row input:focus-visible ~ .check-box {
   outline: 2px solid #007bff;
   outline-offset: 2px;
 }
@@ -542,8 +548,8 @@ input, textarea {
 }
 
 .check-label--bold-14 {
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 /* 인라인 뱃지용 (Task 2-1) */
@@ -604,7 +610,7 @@ input, textarea {
 
 .check-block-text p {
   font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 16px;
   line-height: 1.6;
   color: #000;
@@ -844,41 +850,18 @@ input, textarea {
   background: #f5f5f5;
 }
 
+/* 제출완료(19) "처음으로" — Figma 49:2770 스펙 */
+.btn--outline-dark {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+  font-weight: 700;
+}
+.btn--outline-dark:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
 .btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
-}
-.task-footnote p {
-  padding-bottom: 2px;
-}
-
-.checklist-block {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-}
-
-.feedback-block {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding-top: 60px;
-    max-width: 100%;
-    width: 100%;
-}
-.textarea-input {
-    width: 100%;
-    max-width: 100%;
-    height: 120px;
-    border: 1px solid #000;
-    border-radius: 0;
-    padding: 16px;
-    background: #fff;
-    color: #111;
-    outline: none;
-    resize: none;
-    font-family: Pretendard Variable, Pretendard, sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 1.4;
 }
